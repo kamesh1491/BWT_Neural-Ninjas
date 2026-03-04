@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="AI-powered Insider Threat Detection System — Real-time monitoring dashboard with ML-based anomaly detection, mood tracking, goals, and smart recommendations.">
+    <title>ShieldAI — Insider Threat Detection</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+    <!-- ─── Sidebar ────────────────────────────────────────────── -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+            </div>
+            <span class="brand-text">Shield<span class="accent">AI</span></span>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active" data-page="dashboard" id="nav-dashboard">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" rx="1" />
+                    <rect x="14" y="3" width="7" height="7" rx="1" />
+                    <rect x="3" y="14" width="7" height="7" rx="1" />
+                    <rect x="14" y="14" width="7" height="7" rx="1" />
+                </svg>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-item" data-page="apps" id="nav-apps">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2" />
+                    <line x1="8" y1="21" x2="16" y2="21" />
+                    <line x1="12" y1="17" x2="12" y2="21" />
+                </svg>
+                <span>App Usage</span>
+            </a>
+            <a href="#" class="nav-item" data-page="mood" id="nav-mood">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                    <line x1="9" y1="9" x2="9.01" y2="9" />
+                    <line x1="15" y1="9" x2="15.01" y2="9" />
+                </svg>
+                <span>Mood Tracker</span>
+            </a>
+            <a href="#" class="nav-item" data-page="goals" id="nav-goals">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
+                    <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+                <span>My Goals</span>
+            </a>
+            <div class="nav-divider"></div>
+            <a href="#" class="nav-item" data-page="alerts" id="nav-alerts">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+                <span>Alerts</span>
+                <span class="nav-badge" id="alert-badge">0</span>
+            </a>
+            <a href="#" class="nav-item" data-page="users" id="nav-users">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 00-3-3.87" />
+                    <path d="M16 3.13a4 4 0 010 7.75" />
+                </svg>
+                <span>Users</span>
+            </a>
+            <a href="#" class="nav-item" data-page="logs" id="nav-logs">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                </svg>
+                <span>Activity Logs</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button class="btn-analyze" id="btn-analyze" onclick="triggerAnalysis()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3" />
+                    <path
+                        d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" />
+                </svg>
+                Run ML Analysis
+            </button>
+            <div class="system-status">
+                <div class="status-dot"></div>
+                <span>System Active</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ─── Main Content ───────────────────────────────────────── -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="top-header">
+            <div class="header-left">
+                <button class="menu-toggle" id="menu-toggle" onclick="toggleSidebar()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12" />
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <line x1="3" y1="18" x2="21" y2="18" />
+                    </svg>
+                </button>
+                <div class="page-title">
+                    <h1 id="page-heading">Security Dashboard</h1>
+                    <p class="page-subtitle" id="page-subtitle">Real-time insider threat monitoring and anomaly
+                        detection</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="header-time" id="header-time"></div>
+                <div class="header-user-info" id="header-user-info">
+                    <span class="header-username" id="header-username">Loading...</span>
+                    <span class="header-machine" id="header-machine"></span>
+                </div>
+                <div class="header-avatar" id="header-avatar">
+                    <span>A</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- ─── Dashboard Page ──────────────────────────────────── -->
+        <section class="page active" id="page-dashboard">
+            <!-- Welcome Banner -->
+            <div class="welcome-banner" id="welcome-banner">
+                <div class="welcome-left">
+                    <h2 id="welcome-greeting">Welcome back</h2>
+                    <p class="welcome-sub" id="welcome-sub">Loading system info...</p>
+                </div>
+                <div class="welcome-right" id="welcome-system-stats"></div>
+            </div>
+
+            <!-- Recommendations -->
+            <div class="recs-section" id="recs-section">
+                <h3 class="section-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        style="width:20px;height:20px">
+                        <path
+                            d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    </svg>
+                    Smart Recommendations
+                </h3>
+                <div class="recs-grid" id="recs-grid"></div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card" id="stat-users">
+                    <div class="stat-icon blue">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-total-users">—</span>
+                        <span class="stat-label">Monitored Users</span>
+                    </div>
+                </div>
+                <div class="stat-card" id="stat-alerts-card">
+                    <div class="stat-icon red">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path
+                                d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                            <line x1="12" y1="9" x2="12" y2="13" />
+                            <line x1="12" y1="17" x2="12.01" y2="17" />
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-active-alerts">—</span>
+                        <span class="stat-label">Active Alerts</span>
+                    </div>
+                </div>
+                <div class="stat-card" id="stat-risk-card">
+                    <div class="stat-icon orange">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-avg-risk">—</span>
+                        <span class="stat-label">Avg. Risk Score</span>
+                    </div>
+                </div>
+                <div class="stat-card" id="stat-anomaly-card">
+                    <div class="stat-icon purple">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-anomalies">—</span>
+                        <span class="stat-label">Anomaly Events</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Activity by Hour</h3>
+                        <span class="chart-badge">24h</span>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="chart-hourly"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Risk Distribution</h3>
+                        <span class="chart-badge">All Users</span>
+                    </div>
+                    <div class="chart-body chart-body-doughnut">
+                        <canvas id="chart-risk"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Activity Types</h3>
+                        <span class="chart-badge">Breakdown</span>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="chart-types"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Alert Trend</h3>
+                        <span class="chart-badge">Last 30d</span>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="chart-trend"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Risk Users -->
+            <div class="table-card">
+                <div class="table-header">
+                    <h3>Highest Risk Users</h3>
+                </div>
+                <div class="table-body">
+                    <table id="top-risk-table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Department</th>
+                                <th>Risk Score</th>
+                                <th>Risk Level</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="top-risk-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─── App Usage Page ──────────────────────────────────── -->
+        <section class="page" id="page-apps">
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>App Categories</h3>
+                        <span class="chart-badge">Live</span>
+                    </div>
+                    <div class="chart-body chart-body-doughnut">
+                        <canvas id="chart-app-categories"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card system-info-card" id="system-info-card">
+                    <div class="chart-header">
+                        <h3>System Resources</h3>
+                        <span class="chart-badge">Live</span>
+                    </div>
+                    <div class="system-info-body" id="system-info-body">
+                        <p style="color:var(--text-muted)">Loading...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="table-card">
+                <div class="table-header">
+                    <h3>Running Applications</h3>
+                    <span class="table-count" id="apps-count"></span>
+                </div>
+                <div class="table-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Application</th>
+                                <th>Category</th>
+                                <th>Instances</th>
+                                <th>CPU %</th>
+                                <th>Memory %</th>
+                                <th>Started</th>
+                            </tr>
+                        </thead>
+                        <tbody id="apps-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─── Mood Tracker Page ───────────────────────────────── -->
+        <section class="page" id="page-mood">
+            <div class="mood-grid">
+                <!-- Mood Check-in -->
+                <div class="mood-checkin-card">
+                    <h3>How are you feeling?</h3>
+                    <div class="mood-emojis" id="mood-emojis">
+                        <button class="mood-emoji" data-score="1" title="Stressed">😫</button>
+                        <button class="mood-emoji" data-score="2" title="Anxious">😰</button>
+                        <button class="mood-emoji" data-score="3" title="Neutral">😐</button>
+                        <button class="mood-emoji" data-score="4" title="Calm">😊</button>
+                        <button class="mood-emoji" data-score="5" title="Energized">🔥</button>
+                    </div>
+                    <div class="mood-sliders">
+                        <div class="slider-group">
+                            <label>Energy Level</label>
+                            <input type="range" id="energy-slider" min="1" max="5" value="3">
+                            <div class="slider-labels"><span>Low</span><span>High</span></div>
+                        </div>
+                        <div class="slider-group">
+                            <label>Stress Level</label>
+                            <input type="range" id="stress-slider" min="1" max="5" value="3">
+                            <div class="slider-labels"><span>Low</span><span>High</span></div>
+                        </div>
+                    </div>
+                    <textarea id="mood-notes" placeholder="Optional notes about your day..." rows="2"></textarea>
+                    <button class="btn-submit-mood" id="btn-submit-mood" onclick="submitMood()">
+                        Submit Check-in
+                    </button>
+                </div>
+
+                <!-- Mood Insights -->
+                <div class="mood-insights-card" id="mood-insights-card">
+                    <h3>Mood Insights</h3>
+                    <div class="mood-averages" id="mood-averages"></div>
+                    <div class="mood-insights-list" id="mood-insights-list">
+                        <p style="color:var(--text-muted)">Loading insights...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mood History Chart -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Mood History</h3>
+                    <span class="chart-badge">Last 30 days</span>
+                </div>
+                <div class="chart-body" style="height:300px">
+                    <canvas id="chart-mood-history"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─── Goals Page ──────────────────────────────────────── -->
+        <section class="page" id="page-goals">
+            <!-- Create Goal Form -->
+            <div class="goal-create-card">
+                <h3>Create New Goal</h3>
+                <div class="goal-form">
+                    <input type="text" id="goal-title" placeholder="Goal title (e.g. Complete security audit)"
+                        class="goal-input">
+                    <select id="goal-category" class="goal-select">
+                        <option value="productivity">📋 Productivity</option>
+                        <option value="security">🛡️ Security</option>
+                        <option value="wellness">🧘 Wellness</option>
+                        <option value="project">💻 Project</option>
+                        <option value="learning">📚 Learning</option>
+                    </select>
+                    <input type="number" id="goal-target" placeholder="Target value" class="goal-input goal-input-sm"
+                        value="100">
+                    <input type="text" id="goal-unit" placeholder="Unit" class="goal-input goal-input-sm" value="%">
+                    <input type="date" id="goal-deadline" class="goal-input goal-input-sm">
+                    <button class="btn-create-goal" onclick="createGoal()">+ Add Goal</button>
+                </div>
+            </div>
+
+            <!-- Goals List -->
+            <div class="goals-grid" id="goals-grid">
+                <p style="color:var(--text-muted);padding:20px">Loading goals...</p>
+            </div>
+        </section>
+
+        <!-- ─── Alerts Page ──────────────────────────────────────── -->
+        <section class="page" id="page-alerts">
+            <div class="table-card">
+                <div class="table-header">
+                    <h3>Security Alerts</h3>
+                    <span class="table-count" id="alerts-count"></span>
+                </div>
+                <div class="table-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Severity</th>
+                                <th>User</th>
+                                <th>Category</th>
+                                <th>Title</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alerts-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─── Users Page ───────────────────────────────────────── -->
+        <section class="page" id="page-users">
+            <div class="table-card">
+                <div class="table-header">
+                    <h3>Monitored Users</h3>
+                </div>
+                <div class="table-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Email</th>
+                                <th>Department</th>
+                                <th>Role</th>
+                                <th>Risk Score</th>
+                                <th>Risk Level</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─── Logs Page ───────────────────────────────────────── -->
+        <section class="page" id="page-logs">
+            <div class="table-card">
+                <div class="table-header">
+                    <h3>Activity Logs</h3>
+                    <span class="table-count" id="logs-count"></span>
+                </div>
+                <div class="table-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>User</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Device</th>
+                                <th>Location</th>
+                                <th>Anomaly</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logs-tbody"></tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="logs-pagination"></div>
+            </div>
+        </section>
+
+        <!-- ─── User Detail Modal ───────────────────────────────── -->
+        <div class="modal-overlay" id="user-modal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2 id="modal-user-name">User Detail</h2>
+                    <button class="modal-close" onclick="closeModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-user-info" id="modal-user-info"></div>
+                    <div class="modal-activity-list" id="modal-activity-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast -->
+        <div class="toast" id="toast"></div>
+    </main>
+
+    <script src="js/app.js"></script>
+</body>
+
+</html>
